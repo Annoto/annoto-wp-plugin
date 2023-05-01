@@ -10,11 +10,11 @@ jQuery(
 			window.moodleAnnoto.setupKalturaKdpMap = this.setupKalturaKdpMap.bind( this );
 
 			if (maKApp) {
-				console.log( "AnnotoMoodle: Kaltura loaded on init" );
+				console.log( "AnnotoWordpress: Kaltura loaded on init" );
 				this.setupKalturaKdpMap( maKApp.kdpMap );
 				return true;
 			} else {
-				console.log( "AnnotoMoodle: Kaltura not loaded on init" );
+				console.log( "AnnotoWordpress: Kaltura not loaded on init" );
 			}
 		};
 
@@ -23,24 +23,24 @@ jQuery(
 			// It can be used for SSO auth.
 			const jwt = configparams["token"];
 
-			console.log( "AnnotoMoodle: annoto ready" );
+			console.log( "AnnotoWordpress: annoto ready" );
 			if (api && jwt && jwt !== "") {
 				api.auth( jwt ).catch(
 					function () {
-						console.error( "AnnotoMoodle: SSO auth error" );
+						console.error( "AnnotoWordpress: SSO auth error" );
 					}
 				);
 			} else {
-				console.log( "AnnotoMoodle: SSO auth skipped" );
+				console.log( "AnnotoWordpress: SSO auth skipped" );
 			}
 		};
 
 		setupKalturaKdpMap = function (kdpMap) {
 			if ( ! kdpMap) {
-				console.log( "AnnotoMoodle: skip setup Kaltura players - missing map" );
+				console.log( "AnnotoWordpress: skip setup Kaltura players - missing map" );
 				return;
 			}
-			console.log( "AnnotoMoodle: setup Kaltura players" );
+			console.log( "AnnotoWordpress: setup Kaltura players" );
 			for (let kdpMapKey in kdpMap) {
 				if (kdpMap.hasOwnProperty( kdpMapKey )) {
 					this.setupKalturaKdp( kdpMap[kdpMapKey] );
@@ -50,10 +50,10 @@ jQuery(
 
 		setupKalturaKdp = function (kdp) {
 			if ( ! kdp.config || kdp.setupDone || ! kdp.doneCb) {
-				console.log( "AnnotoMoodle: skip Kaltura player: " + kdp.id );
+				console.log( "AnnotoWordpress: skip Kaltura player: " + kdp.id );
 				return;
 			}
-			console.log( "AnnotoMoodle: setup Kaltura player: " + kdp.id );
+			console.log( "AnnotoWordpress: setup Kaltura player: " + kdp.id );
 			kdp.setupDone = true;
 			kdp.player.kBind( "annotoPluginReady", this.authKalturaPlayer.bind( this ) );
 			this.setupKalturaPlugin( kdp.config );
@@ -184,8 +184,19 @@ jQuery(
 						player = vimeo;
 						data["player-type"] = "vimeo";
 						article = vimeo.closest('article');
-					} else {
-						return {}; // No player found
+					} else { //page
+						console.log('AnnotoWordpress: Can\'t determine the player ID.');
+						console.log('AnnotoWordpress: searching for Annoto On Page Tag');
+					
+						if ($('annoto_on_page').length > 0 ){
+							data["mediaTitle"] = "";
+							player = parent;
+							player.id=location.href;
+							data["player-type"] = "page";
+							article = parent.closest('article');
+						}
+						else
+						return {}; // No player nor page tag found
 					}
 
 					data["mediaGroupId"] = article.id.split('-')[1];
@@ -207,9 +218,11 @@ jQuery(
 		.then(
 			function (configData) {
 				if (!Object.keys(configData).length) {
-					console.info('AnnotoMoodle: Player not recognized');
+					console.info('AnnotoWordpress: Player not recognized');
 					return;
 				}
+
+
 				if ( !configData ) {
 					console && console.error( "Annoto Plugin: settings missing." );
 					return;
@@ -265,6 +278,7 @@ jQuery(
 					config.widgets[0].player.params =
 					configData.settings["annoto-player-params"];
 				}
+
 
 				if ( ! window.Annoto) {
 					console && console.error( "Annoto: not loaded" );
