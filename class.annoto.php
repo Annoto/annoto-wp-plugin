@@ -298,11 +298,16 @@ class Annoto {
 		$issued_at = time();
 		$expire    = $issued_at + 60 * 60;
 
+		$user_info = get_userdata(static::$current_user_identity->ID);
+      		$user_display_name = mb_substr(static::$current_user_identity->display_name, 0, 1);
+        	if(!empty($user_info->first_name) && !empty($user_info->last_name))
+        	$user_display_name  = mb_substr($user_info->first_name, 0, 1) . '"' . mb_substr($user_info->last_name, 0, 1);
+		
 		$payload = array(
 			'iss'      => $plugin_settings['api-key'],
 			'exp'      => $expire,
 			'jti'      => static::$current_user_identity->ID,
-			'name'     => static::$current_user_identity->display_name,
+			'name'     => $user_display_name, /*static::$current_user_identity->display_name*/
 			'email'    => static::$current_user_identity->user_email,
 			'photoUrl' => get_avatar_url( static::$current_user_identity->ID ),
 			'scope'    => ( static::$current_user_identity->caps['administrator'] ? 'super-mod' : 'user' ),
