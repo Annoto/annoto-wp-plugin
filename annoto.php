@@ -24,7 +24,7 @@ along with Annoto Plugin. If not, see https://www.gnu.org/licenses/quick-guide-g
 */
 
 /** ANNOTO_VERSION version - of the Annoto plugin */
-define( 'ANNOTO_VERSION', '2.3.0' );
+define( 'ANNOTO_VERSION', '4.0.0' );
 
 /** ANNOTO_MINIMUM_WP_VERSION - minimum required version of the WordPress */
 define( 'ANNOTO_MINIMUM_WP_VERSION', '4.7' );
